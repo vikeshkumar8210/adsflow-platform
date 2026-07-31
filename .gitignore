@@ -1,0 +1,26 @@
+# Node dependencies
+node_modules/
+.pnpm-store/
+
+# Build & Dist output
+dist/
+build/
+*.tsbuildinfo
+
+# Secrets & Environment variables
+.env
+.env.local
+*.pem
+
+# Local Databases, Logs & Temp
+*.db
+*.db-journal
+logs/
+*.log
+npm-debug.log*
+
+# IDE / OS specific files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
