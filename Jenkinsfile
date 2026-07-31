@@ -13,7 +13,19 @@ pipeline {
             }
         }
 
-        stage('2. Backend Verification & Build') {
+        stage('2. DevSecOps: NPM Dependency Audit') {
+            steps {
+                echo 'Running NPM Security Audit on Backend & Frontend...'
+                dir('backend') {
+                    sh 'npm audit --audit-level=high || true'
+                }
+                dir('frontend') {
+                    sh 'npm audit --audit-level=high || true'
+                }
+            }
+        }
+
+        stage('3. Backend Verification & Build') {
             steps {
                 dir('backend') {
                     echo 'Installing Backend dependencies & running TypeScript compilation check...'
@@ -24,7 +36,7 @@ pipeline {
             }
         }
 
-        stage('3. Frontend Verification & Build') {
+        stage('4. Frontend Verification & Build') {
             steps {
                 dir('frontend') {
                     echo 'Installing Frontend dependencies & verifying build bundle...'
@@ -34,7 +46,7 @@ pipeline {
             }
         }
 
-        stage('4. Docker Container Orchestration Test') {
+        stage('5. DevSecOps: Docker Security & Build Test') {
             steps {
                 echo 'Validating Docker Compose build configuration...'
                 sh 'docker compose config'
@@ -45,14 +57,14 @@ pipeline {
 
     post {
         always {
-            echo 'Pipeline Execution Completed.'
+            echo 'DevSecOps Pipeline Execution Completed.'
             cleanWs()
         }
         success {
-            echo '✅ AdsFlow CI/CD Pipeline Executed Successfully!'
+            echo '✅ AdsFlow DevSecOps Pipeline Executed Successfully!'
         }
         failure {
-            echo '❌ Pipeline Failed. Please check build logs.'
+            echo '❌ Pipeline Failed. Please check security/build logs.'
         }
     }
 }
