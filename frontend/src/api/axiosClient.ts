@@ -1,11 +1,11 @@
 import axios from 'axios';
 
 export const axiosClient = axios.create({
-  baseURL: 'http://localhost:5000/api/v1',
+  baseURL: '/api/v1',
   headers: {
     'Content-Type': 'application/json',
   },
-});
+})
 
 // Interceptor: Har API request me JWT token auto-inject karta hai
 axiosClient.interceptors.request.use((config) => {
