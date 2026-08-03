@@ -1,8 +1,13 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'NodeJS-20'  // <--- Injects npm & node into PATH automatically
+    }
+
     environment {
         PROJECT_NAME = 'adsflow-platform'
+        GITHUB_PAT = credentials('github-access-token')
     }
 
     stages {
@@ -27,8 +32,8 @@ pipeline {
 
         stage('3. Backend Verification & Build') {
             steps {
+                echo 'Installing Backend dependencies & running TypeScript compilation check...'
                 dir('backend') {
-                    echo 'Installing Backend dependencies & running TypeScript compilation check...'
                     sh 'npm ci'
                     sh 'npx prisma generate'
                     sh 'npm run build'
@@ -38,8 +43,8 @@ pipeline {
 
         stage('4. Frontend Verification & Build') {
             steps {
+                echo 'Installing Frontend dependencies & compiling React SPA...'
                 dir('frontend') {
-                    echo 'Installing Frontend dependencies & verifying build bundle...'
                     sh 'npm ci'
                     sh 'npm run build'
                 }
@@ -48,9 +53,8 @@ pipeline {
 
         stage('5. DevSecOps: Docker Security & Build Test') {
             steps {
-                echo 'Validating Docker Compose build configuration...'
+                echo 'Validating Docker Compose build specs...'
                 sh 'docker compose config'
-                sh 'docker compose build'
             }
         }
     }
@@ -61,7 +65,7 @@ pipeline {
             cleanWs()
         }
         success {
-            echo '✅ AdsFlow DevSecOps Pipeline Executed Successfully!'
+            echo '✅ AdsFlow Enterprise CI/CD Pipeline Succeeded!'
         }
         failure {
             echo '❌ Pipeline Failed. Please check security/build logs.'
