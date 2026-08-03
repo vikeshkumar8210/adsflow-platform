@@ -1,7 +1,7 @@
 pipeline {
     agent any
 
-    // 1. Interactive Build Parameters
+    
     parameters {
         choice(
             name: 'ENVIRONMENT', 
