@@ -21,14 +21,13 @@ pipeline {
     environment {
         PROJECT_NAME = 'adsflow-platform'
         GITHUB_PAT = credentials('github-access-token')
-        IMAGE_TAG = "v1.0.${BUILD_NUMBER}"
     }
 
     stages {
         stage('1. Environment Setup & Information') {
             steps {
-                echo " Target Environment: ${params.ENVIRONMENT}"
-                echo " Build Note: ${params.BUILD_NOTE}"
+                echo "🚀 Target Environment: ${params.ENVIRONMENT}"
+                echo "📝 Build Note: ${params.BUILD_NOTE}"
                 echo "Checking out source code from Git repository..."
                 checkout scm
             }
@@ -67,10 +66,10 @@ pipeline {
             }
         }
 
-        stage('5. DevSecOps: Trivy Repository Vulnerability Scan') {
+        stage('5. DevSecOps: Trivy Security Scanning') {
             steps {
-                echo 'Scanning source repository code for secrets & vulnerabilities using Trivy...'
-                sh 'docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/root/aquasec aquasec/trivy:latest fs --severity HIGH,CRITICAL /root/aquasec || true'
+                echo 'Executing Trivy File System Security Vulnerability Scan...'
+                sh 'docker run --rm -v $WORKSPACE:/apps aquasec/trivy:latest fs --severity HIGH,CRITICAL /apps || true'
             }
         }
 
@@ -88,10 +87,10 @@ pipeline {
             cleanWs()
         }
         success {
-            echo " AdsFlow Enterprise DevSecOps Pipeline Succeeded for ${params.ENVIRONMENT}!"
+            echo "✅ [SUCCESS ALERT]: AdsFlow Enterprise Pipeline Succeeded for ${params.ENVIRONMENT}!"
         }
         failure {
-            echo " Pipeline Failed on ${params.ENVIRONMENT}. Please check logs."
+            echo "❌ [FAILURE ALERT]: Pipeline Failed on ${params.ENVIRONMENT}! Check build logs immediately."
         }
     }
 }
