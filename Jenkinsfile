@@ -27,8 +27,8 @@ pipeline {
     stages {
         stage('1. Environment Setup & Information') {
             steps {
-                echo "🚀 Target Environment: ${params.ENVIRONMENT}"
-                echo "📝 Build Note: ${params.BUILD_NOTE}"
+                echo " Target Environment: ${params.ENVIRONMENT}"
+                echo " Build Note: ${params.BUILD_NOTE}"
                 echo "Checking out source code from Git repository..."
                 checkout scm
             }
@@ -88,10 +88,10 @@ pipeline {
             cleanWs()
         }
         success {
-            echo "✅ AdsFlow Enterprise DevSecOps Pipeline Succeeded for ${params.ENVIRONMENT}!"
+            echo " AdsFlow Enterprise DevSecOps Pipeline Succeeded for ${params.ENVIRONMENT}!"
         }
         failure {
-            echo "❌ Pipeline Failed on ${params.ENVIRONMENT}. Please check logs."
+            echo " Pipeline Failed on ${params.ENVIRONMENT}. Please check logs."
         }
     }
 }
