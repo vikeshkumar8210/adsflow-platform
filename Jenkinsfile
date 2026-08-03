@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'NodeJS-20'  // <--- Injects npm & node into PATH automatically
+        nodejs 'NodeJS-20'  
     }
 
     environment {
