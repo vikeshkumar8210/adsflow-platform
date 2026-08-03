@@ -1,7 +1,6 @@
 pipeline {
     agent any
 
-    
     parameters {
         choice(
             name: 'ENVIRONMENT', 
@@ -10,8 +9,8 @@ pipeline {
         )
         string(
             name: 'BUILD_NOTE', 
-            defaultValue: 'Routine CI Build', 
-            description: 'Short description/note for this pipeline run'
+            defaultValue: 'DevSecOps Release Pipeline', 
+            description: 'Short description for this release'
         )
     }
 
@@ -22,6 +21,7 @@ pipeline {
     environment {
         PROJECT_NAME = 'adsflow-platform'
         GITHUB_PAT = credentials('github-access-token')
+        IMAGE_TAG = "v1.0.${BUILD_NUMBER}"
     }
 
     stages {
@@ -67,14 +67,13 @@ pipeline {
             }
         }
 
-        stage('5. DevSecOps: Docker Security & Build Test') {
+        stage('5. DevSecOps: Trivy Repository Vulnerability Scan') {
             steps {
-                echo 'Validating Docker Compose build specs...'
-                sh 'docker compose config || true'
+                echo 'Scanning source repository code for secrets & vulnerabilities using Trivy...'
+                sh 'trivy fs --severity HIGH,CRITICAL . || true'
             }
         }
 
-        // 2. Archiving Compiled Application Assets
         stage('6. Archive Build Artifacts') {
             steps {
                 echo 'Archiving compiled distribution packages...'
@@ -89,7 +88,7 @@ pipeline {
             cleanWs()
         }
         success {
-            echo "✅ AdsFlow Enterprise CI/CD Pipeline Succeeded for ${params.ENVIRONMENT}!"
+            echo "✅ AdsFlow Enterprise DevSecOps Pipeline Succeeded for ${params.ENVIRONMENT}!"
         }
         failure {
             echo "❌ Pipeline Failed on ${params.ENVIRONMENT}. Please check logs."
