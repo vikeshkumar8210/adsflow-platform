@@ -1,6 +1,20 @@
 pipeline {
     agent any
 
+    // 1. Interactive Build Parameters
+    parameters {
+        choice(
+            name: 'ENVIRONMENT', 
+            choices: ['STAGING', 'PRODUCTION'], 
+            description: 'Select target deployment environment'
+        )
+        string(
+            name: 'BUILD_NOTE', 
+            defaultValue: 'Routine CI Build', 
+            description: 'Short description/note for this pipeline run'
+        )
+    }
+
     tools {
         nodejs 'NodeJS-20'  
     }
@@ -11,9 +25,11 @@ pipeline {
     }
 
     stages {
-        stage('1. Checkout Code') {
+        stage('1. Environment Setup & Information') {
             steps {
-                echo 'Checking out source code from Git repository...'
+                echo "🚀 Target Environment: ${params.ENVIRONMENT}"
+                echo "📝 Build Note: ${params.BUILD_NOTE}"
+                echo "Checking out source code from Git repository..."
                 checkout scm
             }
         }
@@ -57,6 +73,14 @@ pipeline {
                 sh 'docker compose config || true'
             }
         }
+
+        // 2. Archiving Compiled Application Assets
+        stage('6. Archive Build Artifacts') {
+            steps {
+                echo 'Archiving compiled distribution packages...'
+                archiveArtifacts artifacts: 'frontend/dist/**', allowEmptyArchive: false
+            }
+        }
     }
 
     post {
@@ -65,10 +89,10 @@ pipeline {
             cleanWs()
         }
         success {
-            echo '✅ AdsFlow Enterprise CI/CD Pipeline Succeeded!'
+            echo "✅ AdsFlow Enterprise CI/CD Pipeline Succeeded for ${params.ENVIRONMENT}!"
         }
         failure {
-            echo '❌ Pipeline Failed. Please check security/build logs.'
+            echo "❌ Pipeline Failed on ${params.ENVIRONMENT}. Please check logs."
         }
     }
 }
