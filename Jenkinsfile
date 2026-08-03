@@ -70,7 +70,7 @@ pipeline {
         stage('5. DevSecOps: Trivy Repository Vulnerability Scan') {
             steps {
                 echo 'Scanning source repository code for secrets & vulnerabilities using Trivy...'
-                sh 'trivy fs --severity HIGH,CRITICAL . || true'
+                sh 'docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/root/aquasec aquasec/trivy:latest fs --severity HIGH,CRITICAL /root/aquasec || true'
             }
         }
 
